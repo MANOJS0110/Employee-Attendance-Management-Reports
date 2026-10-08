@@ -1,0 +1,321 @@
+/* Enterprise Employee Attendance & Workforce Management System Stylesheet */
+:root {
+    --primary-color: #1B365D;
+    --primary-light: #2A4D7A;
+    --primary-dark: #0F223D;
+    --secondary-color: #0284C7;
+    --accent-color: #38BDF8;
+    --bg-main: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --sidebar-bg: #0B192C;
+    --sidebar-text: #94A3B8;
+    --sidebar-active: #38BDF8;
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --border-color: #E2E8F0;
+    --status-present: #10B981;
+    --status-late: #F59E0B;
+    --status-absent: #EF4444;
+    --status-leave: #8B5CF6;
+    --status-halfday: #EC4899;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: var(--sidebar-bg);
+    min-height: 100vh;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.sidebar .brand {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar .brand h5 {
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.sidebar .brand small {
+    color: #94A3B8;
+    font-size: 0.75rem;
+}
+
+.sidebar-nav {
+    padding: 1rem 0.75rem;
+}
+
+.sidebar-nav .nav-link {
+    color: var(--sidebar-text);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav .nav-link:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar-nav .nav-link.active {
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #1B365D 0%, #0284C7 100%);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.sidebar-nav .nav-heading {
+    color: #64748B;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 1rem 1rem 0.4rem;
+}
+
+/* Header Navbar */
+.top-navbar {
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.85rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+/* Main Content Area */
+.main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content-body {
+    padding: 1.75rem;
+    flex: 1;
+}
+
+/* Cards */
+.card-enterprise {
+    background: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-enterprise:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+}
+
+.card-enterprise .card-header {
+    background: #FFFFFF;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Metric KPI Cards */
+.kpi-card {
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: #FFFFFF;
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card .kpi-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+}
+
+.kpi-card .kpi-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.kpi-card .kpi-icon {
+    position: absolute;
+    right: 1.25rem;
+    top: 1.25rem;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Status Badges */
+.badge-status {
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.badge-present {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.badge-late {
+    background: #FEF3C7;
+    color: #B45309;
+}
+
+.badge-absent {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+.badge-halfday {
+    background: #FCE7F3;
+    color: #BE185D;
+}
+
+.badge-leave {
+    background: #EDE9FE;
+    color: #6D28D9;
+}
+
+/* Tables */
+.table-enterprise {
+    margin-bottom: 0;
+}
+
+.table-enterprise thead th {
+    background: #F8FAFC;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.85rem 1rem;
+}
+
+.table-enterprise tbody td {
+    padding: 0.85rem 1rem;
+    font-size: 0.85rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-enterprise tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+/* Digital Clock Widget */
+.clock-widget {
+    background: linear-gradient(135deg, #1B365D 0%, #0F223D 100%);
+    color: #FFFFFF;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.clock-widget .time-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #38BDF8;
+}
+
+/* Buttons */
+.btn-primary-corp {
+    background: #1B365D;
+    color: #FFFFFF;
+    border: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-corp:hover {
+    background: #2A4D7A;
+    color: #FFFFFF;
+}
+
+.btn-punch-in {
+    background: #10B981;
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-punch-in:hover:not(:disabled) {
+    background: #059669;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-punch-out {
+    background: #EF4444;
+    color: #FFFFFF;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.btn-punch-out:hover:not(:disabled) {
+    background: #DC2626;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Code Snippet Box for DAX */
+.code-box {
+    background: #1E293B;
+    color: #F8FAFC;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.85rem;
+    position: relative;
+    overflow-x: auto;
+}
+
+.btn-copy-code {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}

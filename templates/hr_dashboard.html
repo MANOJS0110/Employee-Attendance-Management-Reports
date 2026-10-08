@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% block title %}HR & Management Console | Workforce Analytics{% endblock %}
+{% block page_title %}HR & Workforce Intelligence Console{% endblock %}
+
+{% block content %}
+<!-- KPI Overview Row -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="kpi-card shadow-sm border-0">
+            <div class="kpi-label">Total Staff</div>
+            <div class="kpi-value text-dark">{{ summary.total_employees }}</div>
+            <div class="small text-muted mt-1">Active Personnel</div>
+            <div class="kpi-icon bg-secondary bg-opacity-10 text-secondary">
+                <i class="bi bi-people-fill"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="kpi-card shadow-sm border-0">
+            <div class="kpi-label">Present Today</div>
+            <div class="kpi-value text-success">{{ summary.present_today }}</div>
+            <div class="small text-success mt-1"><i class="bi bi-arrow-up-right"></i> Checked In</div>
+            <div class="kpi-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-person-check-fill"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="kpi-card shadow-sm border-0">
+            <div class="kpi-label">Late Arrivals</div>
+            <div class="kpi-value text-warning">{{ summary.late_today }}</div>
+            <div class="small text-muted mt-1">> 09:15 AM Grace</div>
+            <div class="kpi-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-alarm-fill"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="kpi-card shadow-sm border-0">
+            <div class="kpi-label">On Leave</div>
+            <div class="kpi-value text-info">{{ summary.on_leave_today }}</div>
+            <div class="small text-muted mt-1">Approved Off</div>
+            <div class="kpi-icon bg-info bg-opacity-10 text-info">
+                <i class="bi bi-calendar-minus-fill"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="kpi-card shadow-sm border-0">
+            <div class="kpi-label">Absent Today</div>
+            <div class="kpi-value text-danger">{{ summary.absent_today }}</div>
+            <div class="small text-danger mt-1">Unmarked / Absent</div>
+            <div class="kpi-icon bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-person-x-fill"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="kpi-card shadow-sm border-0">
+            <div class="kpi-label">Pending Leaves</div>
+            <div class="kpi-value text-primary">{{ pending_leaves | length }}</div>
+            <div class="small text-primary mt-1">Requires Action</div>
+            <div class="kpi-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-inbox-fill"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Action Banner -->
+<div class="card card-enterprise shadow-sm border-0 mb-4 bg-white">
+    <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3 py-3">
+        <div>
+            <h6 class="fw-bold mb-1"><i class="bi bi-cpu text-primary me-2"></i>Automated Workforce Operations</h6>
+            <p class="text-secondary small mb-0">Run automated end-of-day classification or refresh Power BI datasets for reporting.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-primary" onclick="syncPowerBIDatasets()">
+                <i class="bi bi-arrow-repeat me-1"></i> Sync Power BI Data
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="triggerBatchAbsent()">
+                <i class="bi bi-clock-history me-1"></i> Run End-of-Day Absent Marker
+            </button>
+            <a href="{{ url_for('report.download_monthly_excel') }}" class="btn btn-sm btn-success">
+                <i class="bi bi-file-earmark-excel me-1"></i> Export Excel
+            </a>
+            <a href="{{ url_for('report.download_monthly_pdf') }}" class="btn btn-sm btn-danger">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Leave Approvals Section -->
+<div class="card card-enterprise shadow-sm border-0 mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div class="fw-bold">
+            <i class="bi bi-check2-circle text-primary me-2"></i>Pending Leave Requests Awaiting HR Review
+            <span class="badge bg-warning text-dark ms-2">{{ pending_leaves | length }} Pending</span>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-enterprise table-hover">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Leave Type</th>
+                        <th>Duration</th>
+                        <th>Days</th>
+                        <th>Reason</th>
+                        <th>Applied On</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if pending_leaves %}
+                        {% for req in pending_leaves %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">{{ req.employee_name }}</div>
+                                <small class="text-muted">{{ req.employee_id }} - {{ req.designation }}</small>
+                            </td>
+                            <td>{{ req.department_name or 'Unassigned' }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ req.leave_type }}</span>
+                            </td>
+                            <td class="small">{{ req.start_date.strftime('%Y-%m-%d') }} to {{ req.end_date.strftime('%Y-%m-%d') }}</td>
+                            <td><span class="fw-bold">{{ req.total_days }}</span> day(s)</td>
+                            <td class="small text-truncate" style="max-width: 200px;" title="{{ req.reason }}">{{ req.reason }}</td>
+                            <td class="small text-muted">{{ req.applied_at.strftime('%d %b, %I:%M %p') }}</td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-success px-2.5" onclick="approveLeave({{ req.leave_id }})" title="Approve">
+                                    <i class="bi bi-check-lg me-1"></i> Approve
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger px-2.5 ms-1" onclick="rejectLeave({{ req.leave_id }})" title="Reject">
+                                    <i class="bi bi-x-lg me-1"></i> Reject
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="bi bi-check-circle text-success fs-3 d-block mb-2"></i>
+                                All leave requests have been reviewed! No pending approvals.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Charts Row -->
+<div class="row g-3 mb-4">
+    <!-- Trend Line Chart -->
+    <div class="col-lg-8 col-12">
+        <div class="card card-enterprise shadow-sm border-0 h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-graph-up text-primary me-2"></i>Monthly Attendance Trend</span>
+                <span class="badge bg-light text-muted border">Daily Trends</span>
+            </div>
+            <div class="card-body">
+                <canvas id="attendanceTrendChart" height="110"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leave Distribution Donut -->
+    <div class="col-lg-4 col-12">
+        <div class="card card-enterprise shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <span class="fw-bold"><i class="bi bi-pie-chart text-primary me-2"></i>Approved Leave Breakdown</span>
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="leaveDistChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Performance & Today's Live Attendance -->
+<div class="row g-3">
+    <!-- Department Attendance Bar Chart -->
+    <div class="col-lg-5 col-12">
+        <div class="card card-enterprise shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <span class="fw-bold"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Department Attendance %</span>
+            </div>
+            <div class="card-body">
+                <canvas id="deptPerformanceChart" height="180"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Live Punch Feed -->
+    <div class="col-lg-7 col-12">
+        <div class="card card-enterprise shadow-sm border-0 h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <span class="fw-bold"><i class="bi bi-broadcast text-danger me-2"></i>Today's Attendance Punch Feed</span>
+                <span class="badge bg-light text-dark border">{{ summary.logs | length }} Punches</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                    <table class="table table-enterprise table-hover">
+                        <thead>
+                            <tr>
+                                <th>Staff Name</th>
+                                <th>Department</th>
+                                <th>Punch In</th>
+                                <th>Punch Out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if summary.logs %}
+                                {% for l in summary.logs %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ l.employee_name }}</div>
+                                        <small class="text-muted">{{ l.employee_id }}</small>
+                                    </td>
+                                    <td>{{ l.department_name or '-' }}</td>
+                                    <td class="font-monospace small">
+                                        {% if l.check_in %}
+                                            <i class="bi bi-arrow-right-short text-success"></i>{{ l.check_in }}
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="font-monospace small">
+                                        {% if l.check_out %}
+                                            <i class="bi bi-arrow-left-short text-danger"></i>{{ l.check_out }}
+                                        {% else %}
+                                            <span class="text-muted">In Office</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge-status {% if l.status == 'PRESENT' %}badge-present{% elif l.status == 'LATE' %}badge-late{% elif l.status == 'HALF_DAY' %}badge-halfday{% elif l.status == 'ON_LEAVE' %}badge-leave{% else %}badge-absent{% endif %}">
+                                            {{ l.status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">No punches recorded yet today.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const res = await fetch('/api/reports/analytics');
+            const data = await res.json();
+            if (!data.success) return;
+
+            const analytics = data.analytics;
+
+            // 1. Attendance Trend Line Chart
+            const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+            const trendLabels = analytics.daily_trend.map(d => d.date_str);
+            const presentData = analytics.daily_trend.map(d => d.present_cnt);
+            const lateData = analytics.daily_trend.map(d => d.late_cnt);
+
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [
+                        {
+                            label: 'Present Employees',
+                            data: presentData,
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Late Arrivals',
+                            data: lateData,
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'transparent',
+                            borderDash: [5, 5],
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 2 } }
+                    }
+                }
+            });
+
+            // 2. Leave Distribution Doughnut Chart
+            const leaveCtx = document.getElementById('leaveDistChart').getContext('2d');
+            const leaveLabels = analytics.leave_distribution.map(l => l.leave_type);
+            const leaveValues = analytics.leave_distribution.map(l => l.total_days);
+
+            new Chart(leaveCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: leaveLabels.length ? leaveLabels : ['No leaves'],
+                    datasets: [{
+                        data: leaveValues.length ? leaveValues : [1],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // 3. Department Performance Bar Chart
+            const deptCtx = document.getElementById('deptPerformanceChart').getContext('2d');
+            const deptLabels = analytics.dept_analytics.map(d => d.department_name.split(' ')[0]);
+            const deptPcts = analytics.dept_analytics.map(d => d.attendance_pct);
+
+            new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: deptLabels,
+                    datasets: [{
+                        label: 'Attendance %',
+                        data: deptPcts,
+                        backgroundColor: '#1B365D',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { max: 100, min: 0 }
+                    }
+                }
+            });
+
+        } catch (e) {
+            console.error('Failed to load chart analytics', e);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block title %}Power BI Analytics Center | Business Intelligence{% endblock %}
+{% block page_title %}Power BI Business Intelligence & Analytics Hub{% endblock %}
+
+{% block content %}
+<!-- Header Banner -->
+<div class="card card-enterprise shadow-sm border-0 mb-4 bg-white">
+    <div class="card-body p-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3">
+                <i class="bi bi-bar-chart-steps"></i>
+            </div>
+            <div>
+                <h5 class="fw-bold mb-1">Power BI Workforce Analytics Center</h5>
+                <p class="text-secondary small mb-0">Star-Schema dataset modeling, direct MySQL database integration, and DAX analytical measure recipes.</p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary-corp" onclick="syncPowerBIDatasets()">
+                <i class="bi bi-arrow-repeat me-1"></i> Refresh CSV Datasets
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Connection Options Grid -->
+<div class="row g-3 mb-4">
+    <!-- Option 1: Direct MySQL Connector -->
+    <div class="col-lg-6 col-12">
+        <div class="card card-enterprise shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <span class="fw-bold"><i class="bi bi-database-fill-gear text-primary me-2"></i>Option A: Direct MySQL Live Connection</span>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">
+                    Connect Power BI Desktop directly to your live MySQL server for automatic real-time report refreshes:
+                </p>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered small">
+                        <tr class="bg-light">
+                            <th style="width: 35%;">Server</th>
+                            <td class="font-monospace">localhost:3306</td>
+                        </tr>
+                        <tr>
+                            <th>Database Name</th>
+                            <td class="font-monospace fw-bold text-primary">employee_attendance_db</td>
+                        </tr>
+                        <tr class="bg-light">
+                            <th>Username</th>
+                            <td class="font-monospace">root</td>
+                        </tr>
+                        <tr>
+                            <th>Password</th>
+                            <td class="font-monospace">ManojS@0311</td>
+                        </tr>
+                        <tr class="bg-light">
+                            <th>Connectivity Mode</th>
+                            <td><code>Import</code> or <code>DirectQuery</code></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="small text-secondary mt-2">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i> Power BI will automatically read the relational foreign keys and maintain data freshness on schedule.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option 2: Pre-Exported Star Schema Files -->
+    <div class="col-lg-6 col-12">
+        <div class="card card-enterprise shadow-sm border-0 h-100">
+            <div class="card-header bg-white">
+                <span class="fw-bold"><i class="bi bi-folder2-open text-warning me-2"></i>Option B: Star Schema CSV Datasets</span>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">
+                    Ready-to-load star schema CSV files located in your project directory at <code>powerbi/data/</code>:
+                </p>
+                <ul class="list-group list-group-flush small mb-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <span><i class="bi bi-filetype-csv text-success me-2"></i><b>Fact_Attendance.csv</b> (350+ punches)</span>
+                        <span class="badge bg-success-subtle text-success">Fact Table</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <span><i class="bi bi-filetype-csv text-success me-2"></i><b>Fact_LeaveRequests.csv</b> (Leaves applied)</span>
+                        <span class="badge bg-success-subtle text-success">Fact Table</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <span><i class="bi bi-filetype-csv text-primary me-2"></i><b>Dim_Employees.csv</b> (Employee master)</span>
+                        <span class="badge bg-primary-subtle text-primary">Dimension</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <span><i class="bi bi-filetype-csv text-primary me-2"></i><b>Dim_Departments.csv</b> (Departments)</span>
+                        <span class="badge bg-primary-subtle text-primary">Dimension</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                        <span><i class="bi bi-filetype-csv text-primary me-2"></i><b>Dim_Date.csv</b> (365 calendar days)</span>
+                        <span class="badge bg-primary-subtle text-primary">Dimension</span>
+                    </li>
+                </ul>
+                <div class="small text-secondary">
+                    <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Load these directly using <b>Get Data -> Folder</b> or <b>Get Data -> Text/CSV</b>.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ready-to-Copy DAX Measures -->
+<div class="card card-enterprise shadow-sm border-0 mb-4">
+    <div class="card-header bg-white">
+        <span class="fw-bold"><i class="bi bi-calculator text-primary me-2"></i>Ready-to-Use DAX Analytical Measures</span>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <!-- Measure 1 -->
+            <div class="col-md-6 col-12">
+                <div class="card bg-light border p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-dark"><i class="bi bi-hash text-primary me-1"></i>Attendance Percentage</span>
+                        <button class="btn btn-xs btn-outline-secondary btn-copy-code" onclick="copyToClipboard(this, 'dax1')">
+                            <i class="bi bi-clipboard"></i> Copy DAX
+                        </button>
+                    </div>
+                    <pre class="code-box mb-0" id="dax1">Attendance % = 
+DIVIDE(
+    CALCULATE(
+        COUNTROWS(Fact_Attendance), 
+        Fact_Attendance[status] IN {"PRESENT", "LATE", "HALF_DAY"}
+    ),
+    COUNTROWS(Fact_Attendance),
+    0
+)</pre>
+                </div>
+            </div>
+
+            <!-- Measure 2 -->
+            <div class="col-md-6 col-12">
+                <div class="card bg-light border p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-dark"><i class="bi bi-hash text-warning me-1"></i>Late Arrival Rate</span>
+                        <button class="btn btn-xs btn-outline-secondary btn-copy-code" onclick="copyToClipboard(this, 'dax2')">
+                            <i class="bi bi-clipboard"></i> Copy DAX
+                        </button>
+                    </div>
+                    <pre class="code-box mb-0" id="dax2">Late Arrival Rate = 
+DIVIDE(
+    CALCULATE(
+        COUNTROWS(Fact_Attendance), 
+        Fact_Attendance[is_late] = TRUE()
+    ),
+    CALCULATE(
+        COUNTROWS(Fact_Attendance),
+        Fact_Attendance[status] IN {"PRESENT", "LATE", "HALF_DAY"}
+    ),
+    0
+)</pre>
+                </div>
+            </div>
+
+            <!-- Measure 3 -->
+            <div class="col-md-6 col-12">
+                <div class="card bg-light border p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-dark"><i class="bi bi-hash text-success me-1"></i>Average Daily Working Hours</span>
+                        <button class="btn btn-xs btn-outline-secondary btn-copy-code" onclick="copyToClipboard(this, 'dax3')">
+                            <i class="bi bi-clipboard"></i> Copy DAX
+                        </button>
+                    </div>
+                    <pre class="code-box mb-0" id="dax3">Avg Daily Working Hours = 
+AVERAGEX(
+    FILTER(Fact_Attendance, Fact_Attendance[working_hours] > 0),
+    Fact_Attendance[working_hours]
+)</pre>
+                </div>
+            </div>
+
+            <!-- Measure 4 -->
+            <div class="col-md-6 col-12">
+                <div class="card bg-light border p-3 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold small text-dark"><i class="bi bi-hash text-info me-1"></i>Approved Leave Days</span>
+                        <button class="btn btn-xs btn-outline-secondary btn-copy-code" onclick="copyToClipboard(this, 'dax4')">
+                            <i class="bi bi-clipboard"></i> Copy DAX
+                        </button>
+                    </div>
+                    <pre class="code-box mb-0" id="dax4">Approved Leave Days = 
+CALCULATE(
+    SUM(Fact_LeaveRequests[total_days]),
+    Fact_LeaveRequests[status] = "APPROVED"
+)</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recommended Dashboard Visual Layout -->
+<div class="card card-enterprise shadow-sm border-0 mb-4">
+    <div class="card-header bg-white">
+        <span class="fw-bold"><i class="bi bi-layout-text-window-reverse text-primary me-2"></i>Executive Power BI Report Layout Plan</span>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 bg-light h-100">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-1-circle text-primary me-1"></i> KPI Top Row</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li>Card 1: Total Workforce (13 employees)</li>
+                        <li>Card 2: Attendance Rate (91.4%)</li>
+                        <li>Card 3: Late Rate (14.2%)</li>
+                        <li>Card 4: Total Working Hours</li>
+                        <li>Card 5: Active Leave Balance</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 bg-light h-100">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-2-circle text-primary me-1"></i> Center Visualizations</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li><b>Line Chart</b>: Daily Attendance & Late Arrival Trend over time</li>
+                        <li><b>Donut Chart</b>: Leave distribution (Casual vs Sick vs Earned vs Optional)</li>
+                        <li><b>Matrix Table</b>: Employee vs Date punch status</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded-3 p-3 bg-light h-100">
+                    <h6 class="fw-bold text-dark"><i class="bi bi-3-circle text-primary me-1"></i> Slicers & Filters</h6>
+                    <ul class="small text-muted mb-0 ps-3">
+                        <li>Department Dropdown (Engineering, HR, Finance, Operations, Marketing)</li>
+                        <li>Date Range Timeline Slider (Dim_Date)</li>
+                        <li>Employee Quick Search</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

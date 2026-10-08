@@ -1,0 +1,10 @@
+leave_id,employee_id,leave_type,start_date,end_date,total_days,reason,status,approved_by,applied_at,action_at
+1,EMP101,Sick Leave,2026-09-14,2026-09-15,2.0,Viral fever and physician recommended rest,APPROVED,EMP102,2026-09-13 10:30:00,2026-09-13 11:45:00
+2,EMP104,Casual Leave,2026-09-21,2026-09-21,1.0,Family function attendance in hometown,APPROVED,EMP102,2026-09-18 09:15:00,2026-09-18 14:00:00
+3,EMP106,Casual Leave,2026-10-08,2026-10-08,1.0,Personal administrative errand,APPROVED,EMP102,2026-10-06 16:20:00,2026-10-07 09:30:00
+4,EMP109,Earned Leave,2026-09-28,2026-09-30,3.0,Annual family vacation,APPROVED,EMP100,2026-09-20 11:00:00,2026-09-21 15:30:00
+5,EMP101,Casual Leave,2026-10-15,2026-10-16,2.0,Attending sibling wedding ceremony,PENDING,,2026-10-07 14:15:00,
+6,EMP103,Sick Leave,2026-10-12,2026-10-12,1.0,Dental root canal procedure appointment,PENDING,,2026-10-08 10:00:00,
+7,EMP107,Earned Leave,2026-10-22,2026-10-24,3.0,Relocation and personal home maintenance,PENDING,,2026-10-08 11:30:00,
+8,EMP111,Optional Holiday,2026-10-21,2026-10-21,1.0,Regional religious celebration,PENDING,,2026-10-08 12:10:00,
+9,EMP105,Earned Leave,2026-09-08,2026-09-10,3.0,Short notice holiday during product sprint release,REJECTED,EMP102,2026-09-05 15:00:00,2026-09-06 09:00:00

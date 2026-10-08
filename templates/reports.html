@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title %}Workforce Reports & Data Exports | Analytics{% endblock %}
+{% block page_title %}Attendance & Leave Reports Center{% endblock %}
+
+{% block content %}
+<!-- Export Actions and Filter Card -->
+<div class="card card-enterprise shadow-sm border-0 mb-4 bg-white">
+    <div class="card-body">
+        <form id="reportFilterForm" class="row g-3 align-items-end" onsubmit="handleFilterReports(event)">
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label small fw-bold">Select Year</label>
+                <select class="form-select" id="filterYear">
+                    <option value="2026" selected>2026</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label small fw-bold">Select Month</label>
+                <select class="form-select" id="filterMonth">
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10" selected>October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <label class="form-label small fw-bold">Department Filter</label>
+                <select class="form-select" id="filterDept">
+                    <option value="">All Departments</option>
+                    {% for d in departments %}
+                        <option value="{{ d.department_id }}">{{ d.department_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 col-sm-6 d-flex gap-2">
+                <button type="submit" class="btn btn-primary-corp flex-grow-1">
+                    <i class="bi bi-funnel-fill me-1"></i> Apply Filter
+                </button>
+            </div>
+        </form>
+
+        <hr class="my-3">
+
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="text-secondary small">
+                <i class="bi bi-info-circle me-1 text-primary"></i> Reports generate comprehensive employee matrices, daily punch breakdowns, and leave audits.
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-success" onclick="downloadExcel()">
+                    <i class="bi bi-file-earmark-excel-fill me-1"></i> Download Excel (.xlsx)
+                </button>
+                <button type="button" class="btn btn-danger" onclick="downloadPdf()">
+                    <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Executive PDF (.pdf)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Attendance Summary Matrix Table -->
+<div class="card card-enterprise shadow-sm border-0 mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div>
+            <span class="fw-bold"><i class="bi bi-table text-primary me-2"></i>Monthly Attendance Summary Matrix</span>
+            <span class="badge bg-light text-muted border ms-2" id="matrixPeriodBadge">October 2026</span>
+        </div>
+        <input type="text" id="matrixSearch" class="form-control form-control-sm" placeholder="Filter in table..." style="width: 200px;" onkeyup="filterMatrixTable()">
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-enterprise table-hover" id="matrixTable">
+                <thead>
+                    <tr>
+                        <th>Emp ID</th>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th class="text-center">Total Days</th>
+                        <th class="text-center text-success">Present</th>
+                        <th class="text-center text-warning">Late</th>
+                        <th class="text-center text-info">Half Day</th>
+                        <th class="text-center text-danger">Absent</th>
+                        <th class="text-center text-purple">On Leave</th>
+                        <th class="text-center">Hours</th>
+                        <th class="text-center">Attendance %</th>
+                    </tr>
+                </thead>
+                <tbody id="matrixTableBody">
+                    <!-- Populated via API -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    async function loadMatrixData(year, month, deptId) {
+        let url = `/api/reports/matrix?year=${year}&month=${month}`;
+        if (deptId) url += `&department_id=${deptId}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            const tbody = document.getElementById('matrixTableBody');
+
+            if (data.success && data.matrix.length > 0) {
+                tbody.innerHTML = data.matrix.map(r => {
+                    let pctClass = 'text-success';
+                    if (r.attendance_pct < 75) pctClass = 'text-danger';
+                    else if (r.attendance_pct < 85) pctClass = 'text-warning';
+
+                    return `
+                        <tr>
+                            <td class="font-monospace fw-bold text-dark">${r.employee_id}</td>
+                            <td>
+                                <div class="fw-bold">${r.name}</div>
+                                <small class="text-muted">${r.designation}</small>
+                            </td>
+                            <td>${r.department_name || '-'}</td>
+                            <td class="text-center font-monospace">${r.logged_days}</td>
+                            <td class="text-center fw-bold text-success font-monospace">${r.present_days}</td>
+                            <td class="text-center fw-bold text-warning font-monospace">${r.late_days}</td>
+                            <td class="text-center fw-bold text-info font-monospace">${r.half_days}</td>
+                            <td class="text-center fw-bold text-danger font-monospace">${r.absent_days}</td>
+                            <td class="text-center fw-bold font-monospace" style="color: #8B5CF6;">${r.leave_days}</td>
+                            <td class="text-center font-monospace">${r.total_working_hours}h</td>
+                            <td class="text-center fw-bold font-monospace ${pctClass}">${r.attendance_pct}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-muted py-4">No records found for selected period and filter.</td></tr>';
+            }
+        } catch (e) {
+            console.error('Failed to load matrix data', e);
+        }
+    }
+
+    function handleFilterReports(e) {
+        e.preventDefault();
+        const year = document.getElementById('filterYear').value;
+        const month = document.getElementById('filterMonth').value;
+        const deptId = document.getElementById('filterDept').value;
+        const monthNames = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        document.getElementById('matrixPeriodBadge').innerText = `${monthNames[month]} ${year}`;
+        loadMatrixData(year, month, deptId);
+    }
+
+    function filterMatrixTable() {
+        const input = document.getElementById('matrixSearch').value.toLowerCase();
+        const rows = document.querySelectorAll('#matrixTable tbody tr');
+        rows.forEach(r => {
+            const text = r.innerText.toLowerCase();
+            r.style.display = text.includes(input) ? '' : 'none';
+        });
+    }
+
+    function downloadExcel() {
+        const year = document.getElementById('filterYear').value;
+        const month = document.getElementById('filterMonth').value;
+        window.location.href = `/reports/excel/monthly?year=${year}&month=${month}`;
+    }
+
+    function downloadPdf() {
+        const year = document.getElementById('filterYear').value;
+        const month = document.getElementById('filterMonth').value;
+        window.location.href = `/reports/pdf/monthly?year=${year}&month=${month}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadMatrixData(2026, 10, '');
+    });
+</script>
+{% endblock %}

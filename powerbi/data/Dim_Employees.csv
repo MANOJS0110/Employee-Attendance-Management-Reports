@@ -1,0 +1,14 @@
+employee_id,name,email,phone,department_id,designation,joining_date,status,created_at
+EMP100,Rajesh Kumar,rajesh.admin@enterprise.com,+91 98765 43200,2,Director & Chief Admin,2022-01-10,ACTIVE,2026-10-08 22:04:56
+EMP101,Jestin Roy,jestin.roy@enterprise.com,+91 98765 43210,1,Lead Full-Stack Engineer,2023-03-01,ACTIVE,2026-10-08 22:04:56
+EMP102,Priya Sharma,priya.sharma@enterprise.com,+91 98765 43211,2,Senior HR Manager,2023-01-15,ACTIVE,2026-10-08 22:04:56
+EMP103,Rahul Verma,rahul.verma@enterprise.com,+91 98765 43212,3,Senior Financial Analyst,2023-04-10,ACTIVE,2026-10-08 22:04:56
+EMP104,Sneha Patel,sneha.patel@enterprise.com,+91 98765 43213,1,Cloud DevOps Architect,2023-06-20,ACTIVE,2026-10-08 22:04:56
+EMP105,Amit Singhania,amit.s@enterprise.com,+91 98765 43214,5,Head of Growth & Marketing,2023-08-01,ACTIVE,2026-10-08 22:04:56
+EMP106,Ananya Roy,ananya.roy@enterprise.com,+91 98765 43215,1,Senior BI & Data Analyst,2023-09-15,ACTIVE,2026-10-08 22:04:56
+EMP107,Vikram Malhotra,vikram.m@enterprise.com,+91 98765 43216,4,Enterprise Operations Lead,2023-11-01,ACTIVE,2026-10-08 22:04:56
+EMP108,Neha Kapoor,neha.kapoor@enterprise.com,+91 98765 43217,2,Talent Acquisition Specialist,2024-02-15,ACTIVE,2026-10-08 22:04:56
+EMP109,Suresh Nair,suresh.nair@enterprise.com,+91 98765 43218,3,Corporate Accounts Manager,2024-03-01,ACTIVE,2026-10-08 22:04:56
+EMP110,Divya Menon,divya.menon@enterprise.com,+91 98765 43219,1,Lead UI/UX Designer,2024-04-10,ACTIVE,2026-10-08 22:04:56
+EMP111,Rohan Gupta,rohan.gupta@enterprise.com,+91 98765 43220,5,Digital Marketing Strategist,2024-05-01,ACTIVE,2026-10-08 22:04:56
+EMP112,Meera Joshi,meera.joshi@enterprise.com,+91 98765 43221,1,Senior QA Automation Engineer,2024-06-15,ACTIVE,2026-10-08 22:04:56
